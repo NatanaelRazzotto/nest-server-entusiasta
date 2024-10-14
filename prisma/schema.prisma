@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Vehicle {
+  id                String     @id @default(uuid())
+  plate             String?
+  serialNumber      String?
+  operatingCategory Float
+  imageIDs          String[]   // Armazena os IDs das imagens como array de strings
+  videoIDs          String[]   // Armazena os IDs dos vídeos como array de strings
+  bodywork          Bodywork? @relation(fields: [bodyworkID], references: [id])
+  bodyworkID        String?
+  powertrain        Powertrain? @relation(fields: [powertrainID], references: [id])
+  powertrainID      String?
+  operator          Operator? @relation(fields: [operatorID], references: [id])
+  operatorID        String?
+}
+
+model OperationalVehicle {
+  id                String     @id @default(uuid())
+  serialNumber      String?    // Número de série do veículo na frota
+  operatingCategory Float      // Categoria de operação do veículo na frota
+  imageIDs          String[]   // IDs das imagens associadas ao veículo
+  videoIDs          String[]   // IDs dos vídeos associados ao veículo
+
+  // Relacionamento com o operador (empresa dona da frota)
+  operator          Operator?  @relation(fields: [operatorID], references: [id])
+  operatorID        String?    // ID do operador
+  
+  // Relacionamento com o veículo registrado no órgão de trânsito
+  registeredVehicle RegisteredVehicle @relation(fields: [registeredVehicleID], references: [id])
+  registeredVehicleID String
+}
+
+
+model RegisteredVehicle {
+  id                String     @id @default(uuid())
+  plate             String?    // Placa do veículo registrada no órgão de trânsito
+  bodywork          Bodywork?  @relation(fields: [bodyworkID], references: [id])
+  bodyworkID        String?    // Referência à carroceria
+  powertrain        Powertrain? @relation(fields: [powertrainID], references: [id])
+  powertrainID      String?    // Referência ao trem de força
+
+  // Relacionamento com o veículo da frota (um veículo registrado pode pertencer a múltiplos registros de frota)
+  operationalVehicles     OperationalVehicle[]
+}
+
+
+model Bodywork {
+  id        String     @id @default(uuid())
+  nameModel       String
+  description      String?
+  serialNumber String?
+  year Float
+  vehicles Vehicle[]
+  registeredVehicles RegisteredVehicle[]
+  manufacturer    Manufacturer?     @relation(fields: [manufacturerID], references: [id])
+  manufacturerID  String?
+}
+
+model Powertrain {
+  id        String     @id @default(uuid())
+  nameModel       String
+  description      String?
+  serialNumber String?
+  year Float
+  fuel Float
+  vehicles Vehicle[]
+  registeredVehicles RegisteredVehicle[]
+  manufacturer    Manufacturer?     @relation(fields: [manufacturerID], references: [id])
+  manufacturerID  String?
+}
+
+model Manufacturer {
+  id        String     @id @default(uuid())
+  name      String
+  cnpj      String?
+  nationality String
+  bodyworks Bodywork[]
+  powertrain Powertrain []
+}
+
+model Operator {
+   id        String     @id @default(uuid())
+  name      String
+  cnpj      String?
+  nationality String
+  vehicle  Vehicle []
+  operationalVehicles OperationalVehicle[]
+}
+
