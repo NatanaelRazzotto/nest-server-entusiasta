@@ -14,8 +14,21 @@ export class OperationalVehicleService {
         return this.prisma.operationalVehicle.findUnique({
           where: { id },
           include: {
-            registeredVehicle : true ,
-            operator : true
+            registeredVehicle : {
+              include : {
+                bodywork : {
+                  include : {
+                    manufacturer :true
+                  }
+                },
+                powertrain : {
+                  include :{
+                    manufacturer : true
+                  }
+                }
+              }
+            } ,
+            operator : true,
           },
         });
       }
