@@ -8,12 +8,14 @@ export class UrbsVehicleScheduleService {
     constructor(private httpService: HttpService) {}
 
     async findLoadVehicle(vehicle: string, a: string): Promise<VehicleSchedule[]> {
-        const url = `https://transporteservico.urbs.curitiba.pr.gov.br/getTabelaVeiculo.php?carro=${vehicle}&c=${a}`;
+        console.log("🚀 ~ UrbsVehicleScheduleService ~ findLoadVehicle ~ vehicle:", vehicle)
+        const url = `https://transporteservico.urbs.curitiba.pr.gov.br/getTabelaVeiculo.php?carro=${vehicle}&c=${process.env.CWBTU_TOKEN}`;
 
         try {
             // Realiza a requisição para a URL
             const response = await lastValueFrom(this.httpService.get(url));
             const data = response.data;
+            console.log("🚀 ~ UrbsVehicleScheduleService ~ findLoadVehicle ~ data:", data)
 
             // Mapear os dados para garantir que sigam o formato da interface
             const result: VehicleSchedule[] = data.map((item: any) => ({

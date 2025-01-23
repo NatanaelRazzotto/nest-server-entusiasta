@@ -23,7 +23,7 @@ export class UrbsLinePointService {
     
     async getLinePoint(linha: string): Promise<LinePoint[]> {
         try {
-          const response = await axios.get<LinePoint[]>(`${this.baseUrl}?linha=${linha}&c=`);
+          const response = await axios.get<LinePoint[]>(`${this.baseUrl}?linha=${linha}&c=${process.env.CWBTU_TOKEN}`);
           return response.data;
         } catch (error) {
           console.error(`Erro ao buscar horários para a linha ${linha}:`, error);

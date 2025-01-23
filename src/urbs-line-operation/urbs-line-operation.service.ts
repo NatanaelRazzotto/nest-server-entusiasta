@@ -21,7 +21,7 @@ export class UrbsLineOperationService {
     
     async getLineSchedule(linha: string): Promise<LineSchedule[]> {
         try {
-          const response = await axios.get<LineSchedule[]>(`${this.baseUrl}?linha=${linha}&c=`);
+          const response = await axios.get<LineSchedule[]>(`${this.baseUrl}?linha=${linha}&c=${process.env.CWBTU_TOKEN}`);
           return response.data;
         } catch (error) {
           console.error(`Erro ao buscar horários para a linha ${linha}:`, error);
